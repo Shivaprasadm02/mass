@@ -6,12 +6,12 @@ output empty,full;
 output reg [7:0]data_out;
 
 reg[4:0] pt=4'b0;
-reg[4:0] fifo_counter;
+	reg[4:0] lifo_counter;
 reg[7:0]memory[15:0];
 integer i;
 
-assign empty = (fifo_counter == 5'b00000) ? 1'b1:1'b0;
-assign full = (fifo_counter == 5'b10000) ? 1'b1:1'b0;
+	assign empty = (lifo_counter == 5'b00000) ? 1'b1:1'b0;
+	assign full = (lifo_counter == 5'b10000) ? 1'b1:1'b0;
 
 //write logic
 always @(posedge clock)
@@ -47,7 +47,7 @@ else if((read_en == 1'b1) && (empty == 1'b0))
 //else if(read_en == 1'b1) 
 begin
 $display("rd_pt=%d", pt);
-data_out <= memory[pt];
+	data_out <= memory[pt-1'b1];
 pt <= pt - 1'b1;
 $monitor("dec_pt=%d", pt);
 end
@@ -59,13 +59,13 @@ end
 always@(posedge clock)
 begin
 if(!resetn)
-fifo_counter <=0;
+lifo_counter <=0;
 else if((!(full)) && (write_en))
-fifo_counter <= fifo_counter + 1;
+lifo_counter <= lifo_counter + 1;
 else if((!(empty)) && read_en)
-fifo_counter <= fifo_counter -1;
+lifo_counter <= lifo_counter -1;
 else
-fifo_counter <=fifo_counter;
+lifo_counter <=lifo_counter;
 end
 endmodule
 
